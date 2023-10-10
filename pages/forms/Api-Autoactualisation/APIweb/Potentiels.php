@@ -5,29 +5,19 @@ include '../../../../connexion/connexion.php';
 
 // Effectuez ici la requête préparée pour obtenir le nombre de centres
 // Par exemple :
-$sql = "SELECT * FROM `prelever` WHERE etat = 1";
+$sql = "SELECT COUNT(*) as total from `prelever` WHERE etat = 1";
 $stmt = $conn->prepare($sql);
-
-// Exécution de la requête
 $stmt->execute();
+$stmt->bind_result($total);
+$stmt->fetch();
 
-// Liaison des résultats
-$stmt->bind_result($id, $autre_colonne); // Ajoute les colonnes nécessaires ici
-
-// Initialisation du total
-$total = 0;
-
-// Parcours des résultats
-while ($stmt->fetch()) {
-    $total++;
+if ($total) {
+    echo $total;
+} else {
+    echo "0"; // Si aucun centre n'est trouvé
 }
 
-// Fermeture du statement
 $stmt->close();
-
-// Affichage du total
-echo $total;
-
-// Fermeture de la connexion
 $conn->close();
 ?>
+

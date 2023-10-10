@@ -1,26 +1,28 @@
 <?php
 include '../../../../connexion/connexion.php';
 
+if (isset($_GET['suppid'])) {
+    $id = $_GET['suppid'];
 
+    // Prépare la requête de suppression avec un paramètre
+    $sql = "DELETE FROM `centre` WHERE centre=?";
+    $stmt = $conn->prepare($sql);
 
+    // Lie le paramètre à la requête
+    $stmt->bind_param("i", $id);
 
-$id=$_GET['suppid'];
+    // Exécute la requête préparée
+    $result = $stmt->execute();
 
-
-
-$sql="DELETE FROM `centre` where centre=$id";
-$result=mysqli_query($conn,$sql);
-if ($result){
-
+    if ($result) {
         echo 'successes';
-        $pages="../data/datacentre.php" ;
-        header('location:'.$pages);
+        $pages = "../data/datacentre.php";
+        header('location:' . $pages);
+    } else {
+        die("Could not connect to database because: " . mysqli_error($conn));
+    }
 
-   
+    // Ferme la requête préparée
+    $stmt->close();
 }
-else{
-    die("Could not connect to database becose:".mysqli_error($conn));
-}
-
-
 ?>

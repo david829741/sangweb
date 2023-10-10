@@ -9,29 +9,50 @@ if (isset($_GET['mod']) && isset($_POST['submit'])) {
     $localisation = $_POST['localisation'];
     $nbr_max = (int)$_POST['nbr_max'];
 
-    // Met à jour les données dans la table "centre"
-    $sql = "UPDATE `centre` SET denomination='$denomination', localisation='$localisation', nbr_max='$nbr_max' WHERE centre='$id'";
-    $result = mysqli_query($conn, $sql);
+    // Prépare la requête d'update avec des paramètres
+    $sql = "UPDATE `centre` SET denomination=?, localisation=?, nbr_max=? WHERE centre=?";
+    $stmt = $conn->prepare($sql);
+
+    // Lie les paramètres à la requête
+    $stmt->bind_param("ssii", $denomination, $localisation, $nbr_max, $id);
+
+    // Exécute la requête préparée
+    $result = $stmt->execute();
 
     if (!$result) {
-        die("Erreur lors de la mise à jour du centre : " . mysqli_error($conn));
-        
+        die("Erreur lors de la mise à jour du centre : " . $conn->error);
     }
+
+    // Ferme la requête préparée
+    $stmt->close();
+
     // Redirige l'utilisateur vers la page de liste des centres après la mise à jour
     $param ="../data/datacentre.php";
     header("Location: $param");
 }
 
-
-
 // Récupère les données du centre à mettre à jour à partir de la base de données
 if (isset($_GET['mod'])) {
     $id = $_GET['mod'];
-    $sql = "SELECT * FROM `centre` WHERE centre='$id'";
-    $result = mysqli_query($conn, $sql);
-    if ($result) {
-        $centre = mysqli_fetch_assoc($result);
-    }
+
+    // Prépare la requête de sélection avec un paramètre
+    $sql = "SELECT * FROM `centre` WHERE centre=?";
+    $stmt = $conn->prepare($sql);
+
+    // Lie le paramètre à la requête
+    $stmt->bind_param("i", $id);
+
+    // Exécute la requête préparée
+    $stmt->execute();
+
+    // Lie les résultats à des variables
+    $stmt->bind_result($id, $denomination, $localisation, $nbr_max);
+
+    // Récupère les résultats
+    $stmt->fetch();
+
+    // Ferme la requête préparée
+    $stmt->close();
 }
 ?>
 <!DOCTYPE html>

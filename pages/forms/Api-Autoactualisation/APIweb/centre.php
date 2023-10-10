@@ -2,15 +2,16 @@
 // Connexion à la base de données
 include '../../../../connexion/connexion.php';
 
-// Effectuer la requête pour obtenir le nombre total de centres
+// Effectuer la requête préparée pour obtenir le nombre total de centres
 $sql = "SELECT COUNT(*) as total FROM centre";
-$result = mysqli_query($conn, $sql);
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result) {
     // Récupérer le total directement
-    $row = mysqli_fetch_assoc($result);
+    $row = $result->fetch_assoc();
     $total = $row['total'];
-
     echo $total;
 } else {
     echo "0"; // Si aucune donnée n'est trouvée ou s'il y a une erreur

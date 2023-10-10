@@ -31,70 +31,58 @@
             <div class="card-body px-5 py-5">
               <h3 class="card-title text-left mb-3">Identidication</h3>
               <?php
-include '../../connexion/connexion.php';
+              include '../../connexion/connexion.php';
 
-if (isset($_POST['submit'])) {
-  $login = $_POST['login'];
-  $code = $_POST['code'];
+              if (isset($_POST['submit'])) {
+                  $login = $_POST['login'];
+                  $code = $_POST['code'];
+    
+                  // Utilisation de requêtes préparées
+                  $sql = "SELECT * FROM `utilisateur` WHERE login = ?";
+                  $stmt = $conn->prepare($sql);
+                  $stmt->bind_param("s", $login);
+                  $stmt->execute();
+                  $result = $stmt->get_result();
+                  if ($result) {
+                      $user = $result->fetch_assoc();
+                      $code = md5($code);
+                      if ($user && $code==$user['code']) {
+                          // Démarrer la session
+                          session_start();
 
-  // Préparer la requête pour obtenir l'utilisateur avec le login donné
-  $sql = "SELECT * FROM `utilisateur` WHERE login = '$login'";
-  $result = mysqli_query($conn, $sql);
+                          $_SESSION['login'] = $login;
+                          $_SESSION['id_type_utilisateur'] = $user['id_type_utilisateur'];
+                          $_SESSION['idcentre'] = $user['idcentre'];
 
-  if ($result) {
-    $user = mysqli_fetch_assoc($result);
-if ($user['login']){
-    // Vérifier si le mot de passe correspond
+                          $idcentre = $user['idcentre'];
+                          $sqlRegion = "SELECT idregion FROM `centre` WHERE centre = ?";
+                          $stmtRegion = $conn->prepare($sqlRegion);
+                          $stmtRegion->bind_param("s", $idcentre);
+                          $stmtRegion->execute();
+                          $resultRegion = $stmtRegion->get_result();
 
-    if (md5($code )==$user['code']) {
+                          if ($resultRegion) {
+                              $centre = $resultRegion->fetch_assoc();
+                              $_SESSION['idregion'] = $centre['idregion'];
+                          } else {
+                              $_SESSION['idregion'] = "";
+                          }
 
-      if ($user['preconnexion'] == 1) {
-        // Le mot de passe est correct, démarrer une session et rediriger l'utilisateur
-        session_start();
-
-        $_SESSION['login'] = $login;
-        $_SESSION['id_type_utilisateur'] = $user['id_type_utilisateur'];
-        $_SESSION['idcentre'] = $user['idcentre'];
-        $idcentre=$user['idcentre'];
-        $sql = "SELECT idregion FROM `centre` WHERE centre = '$idcentre'";
-        $result = mysqli_query($conn, $sql);
-        if ($result) {
-          $centre = mysqli_fetch_assoc($result);
-          $_SESSION['idregion'] = $centre['idregion'];
-        }else {
-          $_SESSION['idregion'] ="";
-        }
-       
-
-        if ($user['id_type_utilisateur'] == 1) {
-
-          header('Location:../../Dashbord.php?id=' . $user['idcentre']);
-          // Remplacez par la page de votre choix
-        } else if($user['id_type_utilisateur'] == 2) {
-          header('Location:../../dashbordccentre.php?id=' . $user['idcentre']);
-        }else {
-          header('Location:../forms/ModuleAnalyse/data/Aanalyser.php?id=' . $user['idcentre']);
-        }
-
-
-
-      } else {
-        $sql = "SELECT * FROM `utilisateur` WHERE login = '$login'and code='$code'";
-        $result = mysqli_query($conn, $sql);
-
-        header('Location:../forms/ModuleLogin/mod/preconnexion.php?mod=' . $user['id']);
-      }
-    } else {
-      echo ' <h3 class="card-title text-left mb-3">Mot de passe incorrect.</h3>';
-    }
-
-
-  } else {
-      echo '<h3 class="card-title text-left mb-3">Nom d"utilisateur incorrect</h3>';
-    }
-  } 
-}
-?>
+                          if ($user['id_type_utilisateur'] == 1) {
+                              header('Location:../../Dashbord.php?id=' . $user['idcentre']);
+                          } elseif ($user['id_type_utilisateur'] == 2) {
+                              header('Location:../../dashbordccentre.php?id=' . $user['idcentre']);
+                          } else {
+                              header('Location:../forms/ModuleAnalyse/data/Aanalyser.php?id=' . $user['idcentre']);
+                          }
+                      } else {
+                          echo '<h3 class="card-title text-left mb-3">Nom d\'utilisateur ou mot de passe incorrect.</h3>';
+                      }
+                  } else {
+                      echo '<h3 class="card-title text-left mb-3">Erreur lors de la vérification du nom d\'utilisateur.</h3>';
+                  }
+              }
+              ?>
               <form method="POST">
                 <div class="form-group">
                   <label>Nom d'utilissatateur *</label>

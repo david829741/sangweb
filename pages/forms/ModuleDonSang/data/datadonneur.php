@@ -287,41 +287,40 @@ include '../../../../connexion/connexion.php';
                         <tbody>
                         
                       
- 
-                          <?php
-                        //   nom	region	tel
-                                        $sql = "SELECT * from `donneur`";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['id'];
-                                                $nom=$row['nom'];
-                                                                                          
-                                                $tel=$row['tel'];
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                  <div class="form-check form-check-muted m-0">
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>
-                                                  </div>
-                                                </td>
-                                                <td>' .$nom.'</td>
-                                              
-                                                <td>' .$tel.'</td>
-                                                <td >                                                
-                                                <div class="badge btn-inverse-success
-                          "> <a href="detaille.php?mod='.$id.'">  Detail</a></div>
-                                                </td>       
-                                              </tr>';
-                                                
-                                            }
-                                        }
-                                        ?>
+                        <?php
+                        // Utilisation de requêtes préparées
+                        $sql = "SELECT * FROM `donneur`";
+                        $stmt = $conn->prepare($sql);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
 
-                                        <!-- popup -->
+                        if ($result) {
+                            while ($row = $result->fetch_assoc()) {
+                                $id = $row['id'];
+                                $nom = $row['nom'];
+                                $tel = $row['tel'];
 
+                                echo '
+                                <tr>
+                                    <td>
+                                        <div class="form-check form-check-muted m-0">
+                                            <label class="form-check-label">
+                                                ' . $id . '
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>' . $nom . '</td>
+                                    <td>' . $tel . '</td>
+                                    <td>
+                                        <div class="badge btn-inverse-success">
+                                            <a href="detaille.php?mod=' . $id . '">Detail</a>
+                                        </div>
+                                    </td>
+                                </tr>';
+                            }
+                        }
+                        ?>
+                                                                <!-- popup -->
 
                                         <!-- popup -->
                           <tr>

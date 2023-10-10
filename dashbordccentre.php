@@ -205,7 +205,7 @@ $id_centre = $_SESSION['idcentre'];
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                 <h3 class="mb-0" id ="eff2">...</h3>                                                   
+                          <h3 class="mb-0" id ="eff2">...</h3>                                                   
                           <p class="text-success ml-2 mb-0 font-weight-medium">+11%</p>
                         </div>
                       </div>
@@ -306,16 +306,31 @@ $id_centre = $_SESSION['idcentre'];
                     <div class="row">
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
-                        <?php                                 
-                                         $sql = "SELECT * from `centre`";
-                                         $result = mysqli_query($conn, $sql);
-                                         if ($result) {
-                                             $total=0;
-                                             while($row = mysqli_fetch_assoc($result)){
-                                                 $total=$total+1;                                                  
-                                             }
-                                             echo'<h2 class="mb-0">'.$total.'</h2>
-                                           ';}          
+                          <?PHP
+                        // Préparer la requête SQL avec une requête préparée
+                        $sql = "SELECT * FROM `centre`";
+                        $stmt = mysqli_prepare($conn, $sql);
+
+                        if ($stmt) {
+                            // Exécuter la requête
+                            mysqli_stmt_execute($stmt);
+
+                            // Récupérer les résultats
+                            $result = mysqli_stmt_get_result($stmt);
+
+                            if ($result) {
+                                $total = 0;
+
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $total = $total + 1;
+                                }
+
+                                echo '<h2 class="mb-0">' . $total . '</h2>';
+                            }
+
+                            // Fermer la requête préparée
+                            mysqli_stmt_close($stmt);
+                        }
                         ?>
                           <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p>
                         </div>
@@ -336,10 +351,14 @@ $id_centre = $_SESSION['idcentre'];
                     <h4 class="card-title">Prevision du jour</h4>
                     <?php
                     echo'<div class="badge btn-inverse-success
-                         "><a href="pages/forms/ModuleDonSang/add/adddonneur.php?id='.$id_centre.'">Nouveau<a></div>';
+                         "><a href="pages/forms/ModuleDonSang/add/adddonneur.php?id='.$id_centre.'">PREMIER DON<a></div>';
                          ""
                     ?>
-                    
+                     <?php
+                    echo'<div class="badge btn-inverse-success
+                         "><a href="pages/forms/ModuleDonSang/add/RECHERCHE/index.PHP?succes=2">NOUVEAU DON<a></div>';
+                         ""
+                    ?>
                     <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -351,43 +370,58 @@ $id_centre = $_SESSION['idcentre'];
                           </tr>
                           </thead>
                         <tbody>
-                          <?php
-                          // Récupérer les valeurs de session
-$id_centre = $_SESSION['idcentre'];
+                       <?php
+                       // Récupérer les valeurs de session
+                       $id_centre = $_SESSION['idcentre'];
 
-// Récupérer la date du jour
-$date_jour = date('Y-m-d');
-                        //   nom	region	tel
-                                        $sql = "SELECT d.id, d.nom, d.tel
-                                        FROM donneur d
-                                        INNER JOIN prelever p ON d.id = p.iddonneur
-                                        WHERE p.etat = 1 AND p.datep = '$date_jour' and p.idcentre=$id_centre ";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['id'];
-                                                $nom=$row['nom'];
-                                             //   $region=$row['region'];                                               
-                                                $tel=$row['tel'];
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                  <div class="form-check form-check-muted m-0">
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>
-                                                  </div>
-                                                </td>
-                                                <td>' .$nom.'</td>
-                                                <td>' .$tel.'</td>
-                                                <td><div class="badge btn-inverse-success
-                         "><a href="pages/forms/">Valider</a></div></td>
-                                              <td><div class="badge btn-inverse-success
-                         "><a href="">Invalider</a></div></td>  
-                                              </tr>';    
-                                            }
-                                        }
-                                        ?>
+                       // Récupérer la date du jour
+                       $date_jour = date('Y-m-d');
+
+                       // Préparer la requête SQL avec une requête préparée
+                       $sql = "SELECT d.id, d.nom, d.tel
+                               FROM donneur d
+                               INNER JOIN prelever p ON d.id = p.iddonneur
+                               WHERE p.etat = 1 AND p.datep = ? AND p.idcentre = ?";
+
+                       $stmt = mysqli_prepare($conn, $sql);
+
+                       if ($stmt) {
+                           // Associer les valeurs aux paramètres de la requête
+                           mysqli_stmt_bind_param($stmt, "si", $date_jour, $id_centre);
+    
+                           // Exécuter la requête
+                           mysqli_stmt_execute($stmt);
+
+                           // Récupérer les résultats
+                           $result = mysqli_stmt_get_result($stmt);
+
+                           if ($result) {
+                               while($row = mysqli_fetch_assoc($result)){
+                                   $id = $row['id'];
+                                   $nom = $row['nom'];
+                                   $tel = $row['tel'];
+
+                                   echo '
+                                   <tr>
+                                       <td>
+                                           <div class="form-check form-check-muted m-0">
+                                               <label class="form-check-label">
+                                                   '.$id.'
+                                               </label>
+                                           </div>
+                                       </td>
+                                       <td>' .$nom.'</td>
+                                       <td>' .$tel.'</td>
+                                       <td><div class="badge btn-inverse-success"><a href="pages/forms/">Valider</a></div></td>
+                                       <td><div class="badge btn-inverse-success"><a href="">Invalider</a></div></td>  
+                                   </tr>';
+                               }
+                           }
+
+                           // Fermer la requête préparée
+                           mysqli_stmt_close($stmt);
+                       }
+                       ?>
                                         <!-- popup -->
                                         <!-- popup -->
                           <tr>

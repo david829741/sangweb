@@ -8,13 +8,16 @@ session_start();
 // Récupérer l'ID du centre depuis la session
 $id_centre = $_SESSION['idcentre'];
 
-// Effectuer la requête pour obtenir le nombre d'enregistrements pour le centre spécifié
-$sql = "SELECT COUNT(*) as total FROM centre WHERE idcentre = $id_centre";
-$result = mysqli_query($conn, $sql);
+// Effectuer la requête préparée pour obtenir le nombre d'enregistrements pour le centre spécifié
+$sql = "SELECT COUNT(*) as total FROM centre WHERE centre = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_centre);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result) {
     // Récupérer le total directement
-    $row = mysqli_fetch_assoc($result);
+    $row = $result->fetch_assoc();
     $total = $row['total'];
 
     echo $total;

@@ -1,47 +1,56 @@
-
 <?php
 include '../../../../connexion/connexion.php';
-                // Récupère les données du centre à mettre à jour à partir de la base de données
-                if (isset($_GET['mod'])) {
-                    $id = $_GET['mod'];
-                    $sql = "SELECT * FROM `utilisateur` WHERE id='$id'";
-                    $result = mysqli_query($conn, $sql);
-                    if ($result) {
-                        $user = mysqli_fetch_assoc($result);
-                    }
-                }
-                ?>
 
+// Récupère les données du centre à mettre à jour à partir de la base de données
+if (isset($_GET['mod'])) {
+    $id = $_GET['mod'];
+    $sql = "SELECT * FROM `utilisateur` WHERE id=?";
+    $stmt = $conn->prepare($sql);
 
+    if ($stmt) {
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result) {
+            $user = $result->fetch_assoc();
+        }
+    }
+
+    $stmt->close();
+}
+?>
 <?php
-
 if (isset($_POST['submit'])) {
     $login = $_POST['login'];
-//    $code = password_hash($_POST['code'], PASSWORD_DEFAULT); // Crypter le mot de passe
     $email = $_POST['email'];
     $tel = $_POST['tel'];
     $idcentre = (int)$_POST['idcentre'];
     $id_type_utilisateur = (int)$_POST['id_type_utilisateur'];
-    $idUtilisateur=$_GET['mod'];
-    // Requête de mise à jour
-$sql = "UPDATE `utilisateur` SET
-login = '$login',
+    $idUtilisateur = $_GET['mod'];
 
-idcentre = $idcentre,
-id_type_utilisateur = $id_type_utilisateur,
-email = '$email',
-tel = '$tel'
-WHERE id = $idUtilisateur";
+    // Requête de mise à jour avec requête préparée
+    $sql = "UPDATE `utilisateur` SET
+        login = ?,
+        idcentre = ?,
+        id_type_utilisateur = ?,
+        email = ?,
+        tel = ?
+        WHERE id = ?";
 
-$result = mysqli_query($conn, $sql);
+    $stmt = $conn->prepare($sql);
 
+    if ($stmt) {
+        $stmt->bind_param("siiisi", $login, $idcentre, $id_type_utilisateur, $email, $tel, $idUtilisateur);
+        $result = $stmt->execute();
+        $stmt->close();
 
-    if (!$result) {
-        die("Could not connect to database because:" . mysqli_error($conn));
+        if (!$result) {
+            die("Could not connect to database because:" . mysqli_error($conn));
+        }
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -113,7 +122,7 @@ $result = mysqli_query($conn, $sql);
                     </span>
                 </div>
                 <div id="monElement">Contenu initial</div>
-            
+
                 ?>
 
             </div>
@@ -127,32 +136,29 @@ $result = mysqli_query($conn, $sql);
 
                                 <div class="form-group">
                                     <label>Nom Utilisateur</label>
-                                    <input type="text" class="form-control p_input" name='login' value="<?php echo $user['login'];?>">
+                                    <input type="text" class="form-control p_input" name='login' value="<?php echo $user['login']; ?>">
                                 </div>
                                 <div class="form-group">
                                     <label for="exampleSelectGender">Type Utilisateur</label>
-                                    <select class="form-control" id="exampleSelectGender" name='id_type_utilisateur' >
+                                    <select class="form-control" id="exampleSelectGender" name='id_type_utilisateur'>
                                         <?php
-                                        $sql = "SELECT * from `type_utilisateur` ";
-                                        $valeurParDefaut =$user['id_type_utilisateur'];
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while ($row = mysqli_fetch_assoc($result)) {
-                                                $id = $row["id"];
-                                                $type = $row["type"];
-                                                if($valeurParDefaut == $id)
-                                                 {
-                                                    echo '
-                                                    <option value="' . $id . '" selected  >' . $type . '</option>';
-                                                }else{
-                                                    echo '
-                                                    <option value="' . $id . '"   >' . $type . '</option>';
-                                                 }
+                                        $sql = "SELECT * FROM `type_utilisateur`";
+                                        $valeurParDefaut = $user['id_type_utilisateur'];
+                                        $stmt = $conn->prepare($sql);
+                                        if ($stmt) {
+                                            $stmt->execute();
+                                            $stmt->bind_result($id, $type);
+
+                                            while ($stmt->fetch()) {
+                                                if ($valeurParDefaut == $id) {
+                                                    echo '<option value="' . $id . '" selected>' . $type . '</option>';
+                                                } else {
+                                                    echo '<option value="' . $id . '">' . $type . '</option>';
                                                 }
-                                                
-                                         
+                                            }
+
+                                            $stmt->close();
                                         }
-                                        
                                         ?>
                                     </select>
                                 </div>
@@ -160,39 +166,39 @@ $result = mysqli_query($conn, $sql);
                                     <label for="exampleSelectGender">Centre Utilisateur</label>
                                     <select class="form-control" id="exampleSelectGender" name='idcentre'>
                                         <?php
-                                        $sql = "SELECT * from `centre` ";
-                                        $result = mysqli_query($conn, $sql);
-                                        $valeurParDefaut =$user['idcentre'];
-                                        if ($result) {
-                                            while ($row = mysqli_fetch_assoc($result)) {
-                                                $id = $row["centre"];
-                                                $denominaion = $row["denomination"];
+                                        $sql = "SELECT * FROM `centre`";
+                                        $valeurParDefaut = $user['idcentre'];
 
-                                                if($valeurParDefaut == $id)
-                                                {
-                                                   echo '
-                                                   <option value="' . $id . '" selected  >' . $denominaion . '</option>';
-                                               }else{
-                                                   echo '
-                                                   <option value="' . $id . '"   >' . $denominaion . '</option>';
+                                        $stmt = $conn->prepare($sql);
+
+                                        if ($stmt) {
+                                            $stmt->execute();
+                                            $stmt->bind_result($id, $denomination);
+
+                                            while ($stmt->fetch()) {
+                                                if ($valeurParDefaut == $id) {
+                                                    echo '<option value="' . $id . '" selected>' . $denomination . '</option>';
+                                                } else {
+                                                    echo '<option value="' . $id . '">' . $denomination . '</option>';
                                                 }
-                                               }
                                             }
-                                        
+
+                                            $stmt->close();
+                                        }
                                         ?>
                                     </select>
                                 </div>
-           
+
                                 <div class="form-group">
                                     <label>Mail Utilisateur</label>
-                                    <input type="email" class="form-control " name='email' value="<?php echo $user['email'];?>">
+                                    <input type="email" class="form-control " name='email' value="<?php echo $user['email']; ?>">
                                 </div>
                                 <div class="form-group">
                                     <label>Tel Utilisateur</label>
-                                    <input type="text" class="form-control " name='tel' value="<?php echo $user['tel'];?>">
+                                    <input type="text" class="form-control " name='tel' value="<?php echo $user['tel']; ?>">
                                 </div>
-                         
-                               
+
+
 
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-primary btn-block enter-btn" name='submit'>Valider</button>

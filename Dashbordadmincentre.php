@@ -277,22 +277,24 @@ include 'connexion/connexion.php';
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
                         <?php
-                                         
-                                         $sql = "SELECT * from `prelever` ";
-                                         $result = mysqli_query($conn, $sql);
-                                         if ($result) {
-                                             $total=0;
-                                             while($row = mysqli_fetch_assoc($result)){
-  
-                                                 $total=$total+1;
-                                                  
-                                             }
-                                             echo'<h2 class="mb-0">'.$total.'</h2>
-                                             
-                                           ';}
-                                           
-                        
-                        ?>
+$sql = "SELECT COUNT(*) AS total_prelevements FROM prelever";
+$stmt = mysqli_prepare($conn, $sql);
+
+if ($stmt) {
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $total = $row['total_prelevements'];
+
+        echo '<h2 class="mb-0">' . $total . '</h2>';
+    }
+    
+    mysqli_stmt_close($stmt);
+}
+
+?>
                           
                           <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
                         </div>
@@ -338,22 +340,24 @@ include 'connexion/connexion.php';
                       <div class="col-8 col-sm-12 col-xl-8 my-auto">
                         <div class="d-flex d-sm-block d-md-flex align-items-center">
                         <?php
-                                         
-                                         $sql = "SELECT * from `centre`";
-                                         $result = mysqli_query($conn, $sql);
-                                         if ($result) {
-                                             $total=0;
-                                             while($row = mysqli_fetch_assoc($result)){
-  
-                                                 $total=$total+1;
-                                                  
-                                             }
-                                             echo'<h2 class="mb-0">'.$total.'</h2>
-                                             
-                                           ';}
-                                           
-                        
-                        ?>
+$sql = "SELECT COUNT(*) AS total_centres FROM centre";
+$stmt = mysqli_prepare($conn, $sql);
+
+if ($stmt) {
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result) {
+        $row = mysqli_fetch_assoc($result);
+        $total = $row['total_centres'];
+
+        echo '<h2 class="mb-0">' . $total . '</h2>';
+    }
+    
+    mysqli_stmt_close($stmt);
+}
+
+?>
                           
                           <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p>
                         </div>
@@ -387,10 +391,7 @@ include 'connexion/connexion.php';
                           </table>
                     <div class="table-responsive">
                     <table class="table">
-                     
-                        <tbody>              
-                        
-                                                                                       
+                        <tbody>                                                              
                                                 </tr>
                                                 <td>
                                                   <div class="badge btn-inverse-success
@@ -402,10 +403,7 @@ include 'connexion/connexion.php';
                                                 </td>
                                         
                                               </tr>
-                                        <!-- popup -->
-
-
-                       
+                                        <!-- popup -->              
                         </tbody>
                       </table>
                     </div>
@@ -430,50 +428,53 @@ include 'connexion/connexion.php';
                           </tr>
                           </thead>
                         <tbody>
-                        
-                      
- 
-                          <?php
-                        //   nom	region	tel
-                                        $sql = "SELECT * from `donneur`";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['id'];
-                                                $nom=$row['nom'];
-                                             //   $region=$row['region'];                                               
-                                                $tel=$row['tel'];
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                  <div class="form-check form-check-muted m-0">
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>
-                                                  </div>
-                                                </td>
-                                                <td>' .$nom.'</td>
-                                          
-                                                <td>' .$tel.'</td>
-                                                <td >                                                
-                                                <div class="badge btn-inverse-success
-                          "> <a href="detaille.php?mod='.$id.'">  Detail</a></div>
-                                                </td>
-                                             
-                                                <td>
-                                                  <div class="badge btn-inverse-success
-                         "><a href="modpres.php?mod='.$id.'">editer<a></div>
-                                                </td>
-                                                <td>
-                                                  <div class="badge btn-inverse-success
-                         "><a href="suppPres.php?suppid='.$id.'">Supprimer<a></div>
-                                                </td>
-                                              </tr>';
-                                                
-                                            }
-                                        }
-                                        ?>
+                        <?php
+$sql = "SELECT * FROM `donneur`";
+$stmt = mysqli_prepare($conn, $sql);
 
+if ($stmt) {
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $id = $row['id'];
+            $nom = $row['nom'];
+            $tel = $row['tel'];
+
+            echo '
+                <tr>
+                    <td>
+                        <div class="form-check form-check-muted m-0">
+                            <label class="form-check-label">
+                                ' . $id . '
+                            </label>
+                        </div>
+                    </td>
+                    <td>' . $nom . '</td>
+                    <td>' . $tel . '</td>
+                    <td>
+                        <div class="badge btn-inverse-success">
+                            <a href="detaille.php?mod=' . $id . '">Detail</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="badge btn-inverse-success">
+                            <a href="modpres.php?mod=' . $id . '">Editer</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="badge btn-inverse-success">
+                            <a href="suppPres.php?suppid=' . $id . '">Supprimer</a>
+                        </div>
+                    </td>
+                </tr>';
+        }
+    }
+
+    mysqli_stmt_close($stmt);
+}
+?>
 
 
                                         <!-- popup -->

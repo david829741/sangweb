@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } while (true);
 
     // Préparer la requête d'insertion en utilisant des requêtes préparées
-    $sqlInsertDonneur = "INSERT INTO donneur (uniquekkey) VALUES (?)";
+    $sqlInsertDonneur = "SELECT id from donneur where uniquekkey= ?";
     $stmtInsertDonneur = $conn->prepare($sqlInsertDonneur);
     $stmtInsertDonneur->bind_param("s", $uniqueCode);
     $resultInsertDonneur = $stmtInsertDonneur->execute();

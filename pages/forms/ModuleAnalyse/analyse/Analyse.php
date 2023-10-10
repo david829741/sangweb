@@ -91,7 +91,7 @@ font-size: 12px;
 
   <select class="selectpicker"  multiple="" data-live-search="true" data-live-search-placeholder="Search" tabindex="-98" name="choix[] " >
   <optgroup label="Driver Groups">
-  <?php
+        <?php
 include '../../../../connexion/connexion.php';
 
 $sql = "SELECT * FROM `analyse`";

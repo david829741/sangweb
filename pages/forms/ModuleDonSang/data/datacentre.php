@@ -185,41 +185,51 @@ include '../../../../connexion/connexion.php';
                           </tr>
                           </thead>
                         <tbody>
-                          <?php
-                                        $sql = "SELECT * from `centre`";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['centre'];
-                                                $denomination=$row['denomination'];
-                                                $localisation=$row['localisation'];
-                                                $nbr_max=$row['nbr_max'];
-                                                $param1 ="modecentre.php" ;
-                                                $param ="suppcentre.php" ;
-                                                $chemin="../../../../index.php";
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>                     
-                                                </td>
-                                                <td>' .$denomination.'</td>
-                                                <td>' .$localisation.'</td>
-                                                <td>
-                                                  <div class="badge btn-inverse-success
-                         "><a href="'.$chemin.'?root='.$param1.'&mod='.$id.'">Editer<a></div>
-                                                </td>
-                                                <td>
-                                                  <div class="badge btn-inverse-success
-                         "><a href="'.$chemin.'?root='.$param.'&suppid='.$id.' ">Supprimer<a></div>
-                                                </td>
-                                              </tr>';
-                                                
-                                            }
-                                        }
-                                        ?>
+                        <?php
+                            $sql = "SELECT * FROM `centre`";
+                            $stmt = mysqli_prepare($conn, $sql);
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
 
+                            if ($result) {
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $id = $row['centre'];
+                                    $denomination = $row['denomination'];
+                                    $localisation = $row['localisation'];
+                                    $nbr_max = $row['nbr_max'];
+
+                                    // Utilisation de requêtes préparées
+                                    $param1 = "modecentre.php";
+                                    $param = "suppcentre.php";
+                                    $chemin = "../../../../index.php";
+
+                                    // Vérification de l'existence des paramètres dans l'URL
+                                    $editLink = $chemin . '?root=' . $param1 . '&mod=' . urlencode($id);
+                                    $deleteLink = $chemin . '?root=' . $param . '&suppid=' . urlencode($id);
+
+                                    echo '
+                                    <tr>
+                                        <td>
+                                            <label class="form-check-label">
+                                                ' . $id . '
+                                            </label>
+                                        </td>
+                                        <td>' . $denomination . '</td>
+                                        <td>' . $localisation . '</td>
+                                        <td>
+                                            <div class="badge btn-inverse-success">
+                                                <a href="' . $editLink . '">Editer</a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="badge btn-inverse-success">
+                                                <a href="' . $deleteLink . '">Supprimer</a>
+                                            </div>
+                                        </td>
+                                    </tr>';
+                                }
+                            }
+                        ?>
                                         <!-- popup -->
 
 

@@ -5,36 +5,38 @@ include '../../../../connexion/connexion.php'
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>SangPourTous</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="../../../../assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="../../../../assets/vendors/jvectormap/jquery-jvectormap.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.carousel.min.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.theme.default.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="../../../../assets/css/style.css">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="../../../../assets/images/favicon.png" />
-  </head>
-  <body>
-    <div class="container-scroller">
-      <!-- partial:partials/_sidebar.html -->
 
-      <!-- partial -->
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>SangPourTous</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../../../assets/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="../../../../assets/vendors/jvectormap/jquery-jvectormap.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/flag-icon-css/css/flag-icon.min.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.carousel.min.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.theme.default.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <!-- endinject -->
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="../../../../assets/css/style.css">
+  <!-- End layout styles -->
+  <link rel="shortcut icon" href="../../../../assets/images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_sidebar.html -->
+
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_navbar.html -->
       <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_navbar.html -->
-       <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
@@ -189,7 +191,7 @@ include '../../../../connexion/connexion.php'
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
-                  <i class="mdi mdi-settings "></i>
+                    <i class="mdi mdi-settings "></i>
                     <p class="mb-0 d-none d-sm-block navbar-profile-name"></p>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
@@ -245,12 +247,12 @@ include '../../../../connexion/connexion.php'
                       </div>
                       <div class="col-3 col-sm-2 col-xl-2 pl-0 text-center">
                         <span>
-                        <?php
-                          echo'
+                          <?php
+                          echo '
                           <a href="../../index.php?jeton=" target="_blank" class="btn btn-outline-light btn-rounded get-started-btn">Voir </a>
                           ';
                           ?>
-                          </span>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -263,12 +265,12 @@ include '../../../../connexion/connexion.php'
                   <div class="card-body">
                     <h4 class="card-title">Order Status</h4>
                     <div class="table-responsive">
-                    <table class="table">
+                      <table class="table">
                         <thead>
                           <tr>
                             <th>
                               <div class="form-check form-check-muted m-0">
-                               
+
                               </div>
                             </th>
                             <th>Type</th>
@@ -276,40 +278,40 @@ include '../../../../connexion/connexion.php'
                             <th> </th>
                             <th> </th>
                           </tr>
-                          </thead>
+                        </thead>
                         <tbody>
                           <?php
-                                        $sql = "SELECT * from `type_utilisateur`";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['id'];
-                                                $types=$row['type'];
-                                                $param1 ="";
-                                                $param ="";
-                                                $chemin="../../../../index.php";
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                <label class="form-check-label">
-                                                '.$id.'
-                                                </label>
-                                                </td> 
-                                                <td>' .$types.'</td>
-                                                <td>
-                                                <div class="badge btn-inverse-success
-                         "><a href="'.$chemin.'?root='.$param1.'&mod='.$id.'">Editer<a></div>
-                                              </td>
-                                              <td>
-                                                <div class="badge btn-inverse-success
-                         "><a href="'.$chemin.'?root='.$param.'&suppid='.$id.' ">Supprimer<a></div>
-                                              </td>
-                                              </tr>';
-                                            }
-                                        }
-                                        ?>
-                                        <!-- popup -->
-                                        <!-- popup -->
+                          $sql = "SELECT id, type FROM `type_utilisateur`";
+                          $stmt = $conn->prepare($sql);
+                          $stmt->execute();
+                          $stmt->bind_result($id, $type);
+                          
+                          while ($stmt->fetch()) {
+                              $param1 = "";
+                              $param = "";
+                              $chemin = "../../../../index.php";
+
+                              echo '
+            <tr>
+                <td>
+                    <label class="form-check-label">' . $id . '</label>
+                </td>
+                <td>' . $type . '</td>
+                <td>
+                    <div class="badge btn-inverse-success">
+                        <a href="' . $chemin . '?root=' . $param1 . '&mod=' . $id . '">Editer</a>
+                    </div>
+                </td>
+                <td>
+                    <div class="badge btn-inverse-success">
+                        <a href="' . $chemin . '?root=' . $param . '&suppid=' . $id . '">Supprimer</a>
+                    </div>
+                </td>
+            </tr>';
+                          }
+                          $stmt->close();
+                          ?> <!-- popup -->
+                          <!-- popup -->
                           <tr>
                         </tbody>
                       </table>
@@ -318,15 +320,15 @@ include '../../../../connexion/connexion.php'
                 </div>
               </div>
             </div>
-            
-            
+
+
           </div>
           <!-- content-wrapper ends -->
           <!-- partial:partials/_footer.html -->
           <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
               <span class="text-muted d-block text-center text-sm-left d-sm-inline-block"></span>
-               </div>
+            </div>
           </footer>
           <!-- partial -->
         </div>
@@ -355,5 +357,6 @@ include '../../../../connexion/connexion.php'
     <!-- Custom js for this page -->
     <script src="../../../../assets/js/dashboard.js"></script>
     <!-- End custom js for this page -->
-  </body>
+</body>
+
 </html>

@@ -162,15 +162,7 @@ include 'connexion/connexion.php';
                   <div class="row">
                     <div class="col-9">
                       <div class="d-flex align-items-center align-self-start">
-
-
-
                         <h3 class="mb-0" id='pot'>...</h3>
-
-
-
-
-
                         <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
                       </div>
                     </div>
@@ -277,22 +269,27 @@ include 'connexion/connexion.php';
                       <div class="d-flex align-items-center align-self-start">
 
 
-                        <?php
-                        $sql = "SELECT*
-                                             FROM  prelever P
-                                             WHERE p.etat = 3 AND P.etatanalyse=1  ";
-                        $result = mysqli_query($conn, $sql);
+                      <?php
+$sql = "SELECT COUNT(*) as count FROM prelever P WHERE P.etat = ? AND P.etatanalyse = ?";
+$stmt = mysqli_prepare($conn, $sql);
 
-                        if ($result) {
-                          $totale = 0;
-                          while ($row = mysqli_fetch_assoc($result)) {
+$etat = 3;
+$etatanalyse = 1;
 
+mysqli_stmt_bind_param($stmt, "ii", $etat, $etatanalyse);
+mysqli_stmt_execute($stmt);
 
-                            $totale = $totale + 1;
-                          }
-                        }
-                        echo ' <h3 class="mb-0" id=>' . $totale . '</h3>';
-                        ?>
+$result = mysqli_stmt_get_result($stmt);
+
+if ($result) {
+    $totale = 0;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $totale = $row['count'];
+    }
+}
+
+echo '<h3 class="mb-0" id=>' . $totale . '</h3>';
+?>
 
 
 
@@ -320,22 +317,28 @@ include 'connexion/connexion.php';
                       <div class="d-flex align-items-center align-self-start">
 
 
-                        <?php
-                        $sql = "SELECT*
-                                             FROM  prelever P
-                                             WHERE p.etat = 3 AND P.etatanalyse=0  ";
-                        $result = mysqli_query($conn, $sql);
+                      <?php
+$sql = "SELECT COUNT(*) as count FROM prelever P WHERE P.etat = ? AND P.etatanalyse = ?";
+$stmt = mysqli_prepare($conn, $sql);
 
-                        if ($result) {
-                          $totale = 0;
-                          while ($row = mysqli_fetch_assoc($result)) {
+$etat = 3;
+$etatanalyse = 0;
 
+mysqli_stmt_bind_param($stmt, "ii", $etat, $etatanalyse);
+mysqli_stmt_execute($stmt);
 
-                            $totale = $totale + 1;
-                          }
-                        }
-                        echo ' <h3 class="mb-0" id=>' . $totale . '</h3>';
-                        ?>
+$result = mysqli_stmt_get_result($stmt);
+
+if ($result) {
+    $totale = 0;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $totale = $row['count'];
+    }
+}
+
+echo '<h3 class="mb-0" id=>' . $totale . '</h3>';
+?>
+
 
 
                         <p class="text-success ml-2 mb-0 font-weight-medium">+12%</p>
@@ -358,28 +361,33 @@ include 'connexion/connexion.php';
                     <div class="col-9">
                       <div class="d-flex align-items-center align-self-start">
 
-                        <?php
-                        $sql = "SELECT *
-                                            FROM  prelever p 
-                                            WHERE p.etat = 3 AND  p.	
-etatanalyse	=1 AND NOT EXISTS (
-                                                      SELECT *
-                                                      FROM analyseeffectuer ae
-                                                      WHERE ae.idprelever = p.id
-                                                        
-                                                  ) ";
-                        $result = mysqli_query($conn, $sql);
+                      <?php
+$sql = "SELECT COUNT(*) as count
+        FROM prelever p 
+        WHERE p.etat = ? AND p.etatanalyse = 1 AND NOT EXISTS (
+            SELECT *
+            FROM analyseeffectuer ae
+            WHERE ae.idprelever = p.id
+        )";
 
-                        if ($result) {
-                          $totale = 0;
-                          while ($row = mysqli_fetch_assoc($result)) {
+$stmt = mysqli_prepare($conn, $sql);
 
+$etat = 3;
 
-                            $totale = $totale + 1;
-                          }
-                        }
-                        echo ' <h3 class="mb-0" id=>' . $totale . '</h3>';
-                        ?>
+mysqli_stmt_bind_param($stmt, "i", $etat);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+
+if ($result) {
+    $totale = 0;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $totale = $row['count'];
+    }
+}
+
+echo '<h3 class="mb-0" id=>' . $totale . '</h3>';
+?>
 
 
 
@@ -408,28 +416,33 @@ etatanalyse	=1 AND NOT EXISTS (
                       <div class="d-flex align-items-center align-self-start">
 
 
-                        <?php
-                        $sql = "SELECT *
-                                            FROM  prelever p 
-                                            WHERE p.etat = 3 AND  p.	
-etatanalyse	=1 AND  EXISTS (
-                                                      SELECT *
-                                                      FROM analyseeffectuer ae
-                                                      WHERE ae.idprelever = p.id
-                                                        
-                                                  ) ";
-                        $result = mysqli_query($conn, $sql);
+                      <?php
+$sql = "SELECT COUNT(*) as count
+        FROM prelever p 
+        WHERE p.etat = ? AND p.etatanalyse = 1 AND EXISTS (
+            SELECT *
+            FROM analyseeffectuer ae
+            WHERE ae.idprelever = p.id
+        )";
 
-                        if ($result) {
-                          $totale = 0;
-                          while ($row = mysqli_fetch_assoc($result)) {
+$stmt = mysqli_prepare($conn, $sql);
 
+$etat = 3;
 
-                            $totale = $totale + 1;
-                          }
-                        }
-                        echo ' <h3 class="mb-0" id=>' . $totale . '</h3>';
-                        ?>
+mysqli_stmt_bind_param($stmt, "i", $etat);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+
+if ($result) {
+    $totale = 0;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $totale = $row['count'];
+    }
+}
+
+echo '<h3 class="mb-0" id=>' . $totale . '</h3>';
+?>
 
 
 
@@ -462,23 +475,16 @@ etatanalyse	=1 AND  EXISTS (
                   <div class="row">
                     <div class="col-8 col-sm-12 col-xl-8 my-auto">
                       <div class="d-flex d-sm-block d-md-flex align-items-center">
-                        <?php
+                      <?php
+$sql = "SELECT COUNT(*) as total FROM prelever";
+$result = mysqli_query($conn, $sql);
 
-                        $sql = "SELECT * from `prelever` ";
-                        $result = mysqli_query($conn, $sql);
-                        if ($result) {
-                          $total = 0;
-                          while ($row = mysqli_fetch_assoc($result)) {
-
-                            $total = $total + 1;
-                          }
-                          echo '<h2 class="mb-0">' . $total . '</h2>
-                                             
-                                           ';
-                        }
-
-
-                        ?>
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $total = $row['total'];
+    echo '<h2 class="mb-0">' . $total . '</h2>';
+}
+?>
 
                         <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
                       </div>
@@ -523,23 +529,16 @@ etatanalyse	=1 AND  EXISTS (
                   <div class="row">
                     <div class="col-8 col-sm-12 col-xl-8 my-auto">
                       <div class="d-flex d-sm-block d-md-flex align-items-center">
-                        <?php
+                      <?php
+$sql = "SELECT COUNT(*) as total FROM utilisateur";
+$result = mysqli_query($conn, $sql);
 
-                        $sql = "SELECT * from `utilisateur`";
-                        $result = mysqli_query($conn, $sql);
-                        if ($result) {
-                          $total = 0;
-                          while ($row = mysqli_fetch_assoc($result)) {
-
-                            $total = $total + 1;
-                          }
-                          echo '<h2 class="mb-0">' . $total . '</h2>
-                                             
-                                           ';
-                        }
-
-
-                        ?>
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $total = $row['total'];
+    echo '<h2 class="mb-0">' . $total . '</h2>';
+}
+?>
 
                         <p class="text-danger ml-2 mb-0 font-weight-medium">-2.1% </p>
                       </div>
@@ -572,67 +571,61 @@ etatanalyse	=1 AND  EXISTS (
                     </font>
                   </h4>
 
-
                   <?php
+$sql = "SELECT idcentre, COUNT(*) AS total_prelevements
+        FROM prelever p
+        WHERE p.etat = 3
+        AND p.idcentre IN (
+            SELECT DISTINCT idcentre
+            FROM prelever
+            ORDER BY datep DESC
+        ) AND  EXISTS (
+            SELECT *
+            FROM centre ae
+            WHERE ae.centre = p.idcentre
+        ) 
+        GROUP BY idcentre";
 
-                  $sql = "SELECT idcentre, COUNT(*) AS total_prelevements
-                                         FROM prelever p
-                                         WHERE p.etat = 3
-                                         AND p.idcentre IN (
-                                             SELECT DISTINCT idcentre
-                                             FROM prelever
-                                             ORDER BY datep DESC
-                                            
-                                         ) AND  EXISTS (
-                                                      SELECT *
-                                                      FROM centre ae
-                                                      WHERE ae.centre = p.idcentre
-                                                        
-                                                  ) 
-                                         GROUP BY idcentre
-                                         ";
-                  $result = mysqli_query($conn, $sql);
-                  if ($result) {
-                    $total = 0;
-                    while ($row = mysqli_fetch_assoc($result)) {
-                      $id = $row['idcentre'];
+$result = mysqli_query($conn, $sql);
 
-                      $sql2 = "SELECT * FROM centre WHERE centre='$id'";
-                      $result2 = mysqli_query($conn, $sql2);
-                      if ($result2) {
-                        $row2 = mysqli_fetch_assoc($result2);
-                        //
+if ($result) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $id = $row['idcentre'];
 
-                        $denomination  = $row2['denomination'];
-                        $nbr_max  = $row2['nbr_max'];
-                        $localisation  = $row2['localisation'];
-                        $idregion  = $row2['idregion'];
+        $sql2 = "SELECT * FROM centre WHERE centre=?";
+        $stmt = mysqli_prepare($conn, $sql2);
+        mysqli_stmt_bind_param($stmt, "s", $id);
+        mysqli_stmt_execute($stmt);
+        $result2 = mysqli_stmt_get_result($stmt);
 
-                      } else {
-                        $denomination  = "";
-                        $nbr_max  = "";
-                        $localisation  ="";
-                        $idregion  = "";
+        if ($result2) {
+            $row2 = mysqli_fetch_assoc($result2);
+            $denomination  = $row2['denomination'];
+            $nbr_max  = $row2['nbr_max'];
+            $localisation  = $row2['localisation'];
+            $idregion  = $row2['idregion'];
+        } else {
+            $denomination  = "";
+            $nbr_max  = "";
+            $localisation  ="";
+            $idregion  = "";
+        }
 
-                      }
-                      $total = $row['total_prelevements'];
-                  
-                      echo '
+        $total = $row['total_prelevements'];
 
-                                                 <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
-                                                   <div class="text-md-center text-xl-left">
-                                                     <h6 class="mb-1"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">'.$denomination.'</font></font></h6>
-                                                     <p class="text-muted mb-0"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Capacite: ' . $nbr_max . '<br>Localisation: ' . $localisation . '</font></font></p>
-                                                   </div>
-                                                   <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
-                                                     <h6 class="font-weight-bold mb-0"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">' . $total . '</font></font></h6>
-                                                   </div>
-                                                 </div>
-                                                 
-                                               ';
-                    }
-                  }
-                  ?>
+        echo '
+            <div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+                <div class="text-md-center text-xl-left">
+                    <h6 class="mb-1"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">'.$denomination.'</font></font></h6>
+                    <p class="text-muted mb-0"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Capacite: ' . $nbr_max . '<br>Localisation: ' . $localisation . '</font></font></p>
+                </div>
+                <div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+                    <h6 class="font-weight-bold mb-0"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">' . $total . '</font></font></h6>
+                </div>
+            </div>';
+    }
+}
+?>
 
 
 
@@ -727,105 +720,7 @@ etatanalyse	=1 AND  EXISTS (
                             </div>
                           </div>
                         </div>
-                        <!-- <div class="preview-item border-bottom">
-                          <div class="preview-thumbnail">
-                            <div class="preview-icon bg-info">
-                              <i class="mdi mdi-clock"></i>
-                            </div>
-                          </div>
-                          <div class="preview-item-content d-sm-flex flex-grow">
-                            <div class="flex-grow">
-                               <h6 class="preview-subject">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">Réunion de projet</font>
-                                </font>
-                              </h6> 
-                               <p class="text-muted mb-0">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">Discussion sur un nouveau projet</font>
-                                </font>
-                              </p> 
-                            </div>
-                            <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                               <p class="text-muted">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">il y a 35 minutes</font>
-                                </font>
-                              </p> 
-                               <p class="text-muted mb-0">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">15 tâches, 2 numéros</font>
-                                </font>
-                              </p>
-                            </div>
-                          </div>
-                        </div> -->
-                        <!-- <div class="preview-item border-bottom">
-                          <div class="preview-thumbnail">
-                            <div class="preview-icon bg-danger">
-                              <i class="mdi mdi-email-open"></i>
-                            </div>
-                          </div>
-                          <div class="preview-item-content d-sm-flex flex-grow">
-                            <div class="flex-grow">
-                              <h6 class="preview-subject">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">Courrier diffusé</font>
-                                </font>
-                              </h6>
-                              <p class="text-muted mb-0">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">Envoi des détails de la version à l'équipe</font>
-                                </font>
-                              </p>
-                            </div>
-                            <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                              <p class="text-muted">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">il y a 55 minutes</font>
-                                </font>
-                              </p>
-                              <p class="text-muted mb-0">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">35 tâches, 7 numéros</font>
-                                </font>
-                              </p>
-                            </div>
-                          </div>
-                        </div> -->
-                        <!-- <div class="preview-item">
-                          <div class="preview-thumbnail">
-                            <div class="preview-icon bg-warning">
-                              <i class="mdi mdi-chart-pie"></i>
-                            </div>
-                          </div>
-                          <div class="preview-item-content d-sm-flex flex-grow">
-                            <div class="flex-grow">
-                              <h6 class="preview-subject">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">Conception de l'interface utilisateur</font>
-                                </font>
-                              </h6>
-                              <p class="text-muted mb-0">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">Planification de nouvelles applications</font>
-                                </font>
-                              </p>
-                            </div>
-                            <div class="mr-auto text-sm-right pt-2 pt-sm-0">
-                              <p class="text-muted">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">il y a 50 minutes</font>
-                                </font>
-                              </p>
-                              <p class="text-muted mb-0">
-                                <font style="vertical-align: inherit;">
-                                  <font style="vertical-align: inherit;">27 tâches, 4 numéros</font>
-                                </font>
-                              </p>
-                            </div>
-                          </div>
-                        </div> -->
+                      
                       </div>
                     </div>
                   </div>

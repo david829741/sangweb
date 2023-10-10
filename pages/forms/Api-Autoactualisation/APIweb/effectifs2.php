@@ -3,40 +3,29 @@
 // Remplacez les valeurs ci-dessous par vos propres informations de base de données
 include '../../../../connexion/connexion.php';
 
-// Effectuez ici la requête préparée pour obtenir le nombre de centres
+// Effectuez ici la requête pour obtenir le nombre de centres
 // Par exemple :
 session_start();
 
 // Récupérer les valeurs de session
+
 $id_centre = $_SESSION['idcentre'];
 
-$sql = "SELECT * FROM `prelever` WHERE etat = ? AND idcentre = ?";
-$stmt = $conn->prepare($sql);
+$sql = "SELECT * from `prelever` WHERE etat = 3 and idcentre=$id_centre";
+$result = mysqli_query($conn, $sql);
+                                       
+if ($result) {
+    $total=0;
+    while($row = mysqli_fetch_assoc($result)){
 
-// Liaison des paramètres
-$etat = 3;
-$stmt->bind_param("ii", $etat, $id_centre);
-
-// Exécution de la requête
-$stmt->execute();
-
-// Liaison des résultats
-$stmt->bind_result($id, $autre_colonne); // Ajoute les colonnes nécessaires ici
-
-// Initialisation du total
-$total = 0;
-
-// Parcours des résultats
-while ($stmt->fetch()) {
-    $total++;
+        $total=$total+1;
+         
+    }
+   
+    echo $total;
+} else {
+    echo "0"; // Si aucun centre n'est trouvé
 }
 
-// Fermeture du statement
-$stmt->close();
-
-// Affichage du total
-echo $total;
-
-// Fermeture de la connexion
 $conn->close();
 ?>

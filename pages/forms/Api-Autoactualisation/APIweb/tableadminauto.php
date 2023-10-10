@@ -1,7 +1,7 @@
 <?php
 include '../../../../connexion/connexion.php';
 
-$sql = "SELECT * FROM `donneur` LIMIT 5"; // Limite à cinq lignes
+$sql = "SELECT * FROM `donneur` ORDER BY id DESC LIMIT 5"; // Limite à cinq lignes et tri par ordre décroissant
 
 // Préparer la requête préparée
 $stmt = $conn->prepare($sql);
@@ -11,8 +11,7 @@ if ($stmt) {
     // Exécution de la requête
     $stmt->execute();
 
-    // Liaison des résultats
-    $stmt->bind_result($id, $nom, $tel);
+    $result = $stmt->get_result();
 
     echo '<table class="table">
             <thead>
@@ -25,7 +24,11 @@ if ($stmt) {
             <tbody>';
 
     // Parcourir les résultats et les afficher dans le tableau
-    while ($stmt->fetch()) {
+    while ($row = $result->fetch_assoc()) {
+        $id = $row['id'];
+        $nom = $row['nom'];
+        $tel = $row['tel'];
+
         echo '
             <tr>
                 <td>' . $id . '</td>

@@ -171,7 +171,7 @@ include '../../../../connexion/connexion.php';
                   <div class="card-body">
                     <h4 class="card-title">Order Status</h4>
                     <div class="table-responsive">
-                    <table class="table">
+                    <!-- <table class="table">
                         <thead>
                           <tr>
                             <th>centre</th>
@@ -182,43 +182,53 @@ include '../../../../connexion/connexion.php';
                        
                           </tr>
                           </thead>
-                        <tbody>
-                          <?php
-                                        $sql = "SELECT * from `centre`";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['centre'];
-                                                $denomination=$row['denomination'];
-                                                $localisation=$row['localisation'];
-                                                $nbr_max=$row['nbr_max'];
-                                                $param1 ="addcentre.php" ;
-                                                $param ="suppcentre.php" ;
-                                                $chemin="../../../../index.php";
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>                     
-                                                </td>
-                                                <td>' .$denomination.'</td>
-                                                <td>' .$localisation.'</td>
-                                                
-                                              </tr>';
-                                                
-                                            }
-                                        }
-                                        ?>
+                        <tbody> -->
+                    
+<?php
+$sql = "SELECT * FROM `centre`";
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
 
+if ($result) {
+    echo '<table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Denomination</th>
+                    <th>Localisation</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+    while ($row = $result->fetch_assoc()) {
+        $id = $row['centre'];
+        $denomination = $row['denomination'];
+        $localisation = $row['localisation'];
+
+        echo '
+        <tr>
+            <td>
+                <label class="form-check-label">
+                    ' . $id . '
+                </label>                     
+            </td>
+            <td>' . $denomination . '</td>
+            <td>' . $localisation . '</td>
+        </tr>';
+    }
+
+    echo '</tbody></table>';
+}
+?>
                                         <!-- popup -->
 
 
                                         <!-- popup -->
-                          <tr>
+                          <!-- <tr>
                        
                         </tbody>
-                      </table>
+                      </table> -->
                     </div>
                   </div>
                 </div>

@@ -194,37 +194,29 @@ $id_centre = $_SESSION['idcentre'];
                                             <div class="col-5 col-sm-7 col-xl-8 p-0">
 
                                                 <h4 class="card-title">
-                                                <?php
-if (isset($_POST['recherche']) || isset($_GET['date'])) {
-    include '../../../../connexion/connexion.php';
+                                                    <?php
+                                                    if (isset($_POST['recherche'])||isset($_GET['date'])) {
 
-    if (isset($_GET['date']) && !isset($_POST['recherche'])) {
-        $date_jour = $_GET['date'];
-    } else {
-        $date_jour = $_POST['date'];
-    }
+                                                        if(isset($_GET['date'])&& !isset($_POST['recherche'])){
+                                                            $date_jour =  $_GET['date'];
+                                                        }else{    
+                                                            $date_jour = $_POST['date'];
+                                                       }
+                                                       
 
-    if ($date_jour) {
-        // Convertir la date en format "jour mois année"
-        $date_formattee = "Analyses" . " " . date('j M Y', strtotime($date_jour));
-        echo $date_formattee;
-    } else {
-        echo "Analyses";
-    }
-    
-    // Utilisation de requête préparée pour éviter les injections SQL
-    $stmt = $conn->prepare("INSERT INTO analyses_table (date) VALUES (?)");
-    $stmt->bind_param("s", $date_jour);
-    $stmt->execute();
-    $stmt->close();
-    
-    $conn->close();
-} else {
-    $date_jour = date('Y-m-d');
-    $date_formattee = "Analyses" . " " . date('j M Y', strtotime($date_jour));
-    echo $date_formattee;
-}
-?>
+                                                        if ($date_jour) {
+                                                            // Convertir la date en format "jour mois année"
+                                                            $date_formattee = "Analyses"." ".date('j M Y', strtotime($date_jour));
+                                                            echo $date_formattee;
+                                                        } else {
+                                                            echo "Analyses";
+                                                        }
+                                                    } else {
+                                                        $date_jour = date('Y-m-d');
+                                                        $date_formattee = "Analyses"." ".date('j M Y', strtotime($date_jour));
+                                                        echo $date_formattee;
+                                                    }
+                                                    ?>
                                                 </h4>
                                                 <p class="mb-0 font-weight-normal d-none d-sm-block"></p>
                                             </div>
@@ -271,108 +263,104 @@ if (isset($_POST['recherche']) || isset($_GET['date'])) {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                <?php
-if (isset($_POST['recherche']) || isset($_GET['date'])) {
-    include '../../../../connexion/connexion.php';
+                                                    <?php
 
-    // Récupérer les valeurs de session
-    //$id_centre = $_SESSION['idcentre'];
-    $id_centre = 7;
+                                                    if (isset($_POST['recherche'])||isset($_GET['date'])) {
+                                                        // Récupérer les valeurs de session
+                                                        //$id_centre = $_SESSION['idcentre'];
+                                                        $id_centre = 7;
 
-    // Récupérer la date du jour
-    if (isset($_GET['date']) && !isset($_POST['recherche'])) {
-        $date_jour = $_GET['date'];
-    } else {
-        $date_jour = $_POST['date'];
-    }
+                                                        // Récupérer la date du jour
+                                                          if(isset($_GET['date'])&& !isset($_POST['recherche'])){$date_jour =  $_GET['date'];}else{ $date_jour = $_POST['date'];}
+                                                       
+                                                        //   nom	region	tel
+                                                        $sql = "SELECT p.id, d.nom, d.tel ,p.datep
+                                                        FROM donneur d
+                                                        INNER JOIN prelever p ON d.id = p.iddonneur
+                                                        WHERE p.etat = 3 AND p.datep = ? and p.idcentre=? AND P.etatanalyse	=0 ";
+                                                        $stmt = mysqli_prepare($conn, $sql);
+                                                        mysqli_stmt_bind_param($stmt, "si", $date_jour, $id_centre);
+                                                        mysqli_stmt_execute($stmt);
+                                                        $result = mysqli_stmt_get_result($stmt);
+                                                        if ($result) {
+                                                            $K = 1;
+                                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                                $id = $row['id'];
+                                                                $nom = $row['nom'];
+                                                                //   $region=$row['region'];                                               
+                                                                $tel = $row['tel'];
 
-    // Préparer la requête avec des paramètres
-    $sql = "SELECT p.id, d.nom, d.tel, p.datep
-            FROM donneur d
-            INNER JOIN prelever p ON d.id = p.iddonneur
-            WHERE p.etat = 3 AND p.datep = ? AND p.idcentre = ? AND P.etatanalyse = 0";
+                                                                $nd = "DN_00000000" . $K;
+                                                                echo '
+                                    <tr>
+                                    <td>
+                                      <div class="form-check form-check-muted m-0">
+                                        <label class="form-check-label">
+                                        ' . $id . '
+                                        </label>
+                                      </div>
+                                    </td>
+                                    <td>' . $nd . '</td>
+                                    <td><div class="badge btn-inverse-success
+                                    "><a href="../analyse/Analyse.php?id=' . $id . '&date='.$date_jour.'">Editer</a></div></td> 
+                                    <td><div class="badge btn-inverse-success
+             "><a href="../mod/modvalidationanalyse.php?id=' . $id . '&date='.$date_jour.'">Aucun Teste Positif</a></div></td>
 
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $date_jour, $id_centre);
-    $stmt->execute();
-    $result = $stmt->get_result();
+                                  
+                                  </tr>';
+                              
+                                                                $K = $K + 1;
+                                                            }
+                                                        }
+                                                    } else {
 
-    if ($result) {
-        $K = 1;
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $nom = $row['nom'];
-            $tel = $row['tel'];
+                                                        // Récupérer les valeurs de session
+                                                        //$id_centre = $_SESSION['idcentre'];
+                                                        $id_centre = 7;
 
-            $nd = "DN_00000000" . $K;
-            echo '
-            <tr>
-                <td>
-                    <div class="form-check form-check-muted m-0">
-                        <label class="form-check-label">
-                            ' . $id . '
-                        </label>
-                    </div>
-                </td>
-                <td>' . $nd . '</td>
-                <td><div class="badge btn-inverse-success"><a href="../analyse/Analyse.php?id=' . $id . '&date=' . $date_jour . '">Editer</a></div></td>
-                <td><div class="badge btn-inverse-success"><a href="../mod/modvalidationanalyse.php?id=' . $id . '&date=' . $date_jour . '">Aucun Teste Positif</a></div></td>
-            </tr>';
+                                                        // Récupérer la date du jour
+                                                        $date_jour = date('Y-m-d');
+                                                        //   nom	region	tel
+                                                        $sql = "SELECT p.id, d.nom, d.tel ,p.datep
+                            FROM donneur d
+                            INNER JOIN prelever p ON d.id = p.iddonneur
+                            WHERE p.etat = 3 AND p.datep = ? and p.idcentre=? AND P.etatanalyse	=0 ";
+                                                        $stmt = mysqli_prepare($conn, $sql);
+                                                        mysqli_stmt_bind_param($stmt, "si", $date_jour, $id_centre);
+                                                        mysqli_stmt_execute($stmt);
+                                                        $result = mysqli_stmt_get_result($stmt);
 
-            $K = $K + 1;
-        }
-    }
-    $stmt->close();
-    $conn->close();
-} else {
-    // Récupérer les valeurs de session
-    //$id_centre = $_SESSION['idcentre'];
-    $id_centre = 7;
+                                                        if ($result) {
+                                                            $K = 1;
+                                                            while ($row = mysqli_fetch_assoc($result)) {
+                                                                $id = $row['id'];
+                                                                $nom = $row['nom'];
+                                                                //   $region=$row['region'];                                               
+                                                                $tel = $row['tel'];
 
-    // Récupérer la date du jour
-    $date_jour = date('Y-m-d');
+                                                                $nd = "DN_00000000" . $K;
+                                                                echo '
+                                    <tr>
+                                    <td>
+                                      <div class="form-check form-check-muted m-0">
+                                        <label class="form-check-label">
+                                        ' . $id . '
+                                        </label>
+                                      </div>
+                                    </td>
+                                    <td>' . $nd . '</td>
+                                    <td>' . $tel . '</td>
+                                    <td><div class="badge btn-inverse-success
+             "><a href="../analyse/Analyse.php?id=' . $id . '&date='.$date_jour.'">Editer</a></div></td>
+             <td><div class="badge btn-inverse-success
+             "><a href="../mod/modvalidationanalyse.php?mod=' . $id . '&date='.$date_jour.'">Aucun Teste Positif</a></div></td>
+                                  </tr>';
 
-    // Préparer la requête avec des paramètres
-    $sql = "SELECT p.id, d.nom, d.tel, p.datep
-            FROM donneur d
-            INNER JOIN prelever p ON d.id = p.iddonneur
-            WHERE p.etat = 3 AND p.datep = ? AND p.idcentre = ? AND P.etatanalyse = 0";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("si", $date_jour, $id_centre);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result) {
-        $K = 1;
-        while ($row = mysqli_fetch_assoc($result)) {
-            $id = $row['id'];
-            $nom = $row['nom'];
-            $tel = $row['tel'];
-
-            $nd = "DN_00000000" . $K;
-            echo '
-            <tr>
-                <td>
-                    <div class="form-check form-check-muted m-0">
-                        <label class="form-check-label">
-                            ' . $id . '
-                        </label>
-                    </div>
-                </td>
-                <td>' . $nd . '</td>
-                <td>' . $tel . '</td>
-                <td><div class="badge btn-inverse-success"><a href="../analyse/Analyse.php?id=' . $id . '&date=' . $date_jour . '">Editer</a></div></td>
-                <td><div class="badge btn-inverse-success"><a href="../mod/modvalidationanalyse.php?mod=' . $id . '&date=' . $date_jour . '">Aucun Teste Positif</a></div></td>
-            </tr>';
-
-            $K = $K + 1;
-        }
-    }
-    $stmt->close();
-    $conn->close();
-}
-?>
+                                                                $K = $K + 1;
+                                                            }
+                                                        }
+                                                    }
+                                                    ?>
                                                     <!-- popup -->
                                                     <!-- popup -->
                                                     <tr>
@@ -418,14 +406,22 @@ if (isset($_POST['recherche']) || isset($_GET['date'])) {
                                                         $id_centre = 7;
 
                                                         // Récupérer la date du jour
-                                                          if(isset($_GET['date'])&& !isset($_POST['recherche'])){$date_jour =  $_GET['date'];}else{ $date_jour = $_POST['date'];}
+                                                          if(isset($_GET['date'])&& !isset($_POST['recherche'])){
+                                                              $date_jour =  $_GET['date'];
+                                                          }else{
+                                                              $date_jour = $_POST['date'];
+                                                          }
                                                        
                                                         //   nom	region	tel
                                                         $sql = "SELECT p.id, d.nom, d.tel ,p.datep
                                                         FROM donneur d
                                                         INNER JOIN prelever p ON d.id = p.iddonneur
-                                                        WHERE p.etat = 3 AND p.datep = '$date_jour' and p.idcentre=$id_centre AND P.etatanalyse	=1";
-                                                        $result = mysqli_query($conn, $sql);
+                                                        WHERE p.etat = 3 AND p.datep = ? and p.idcentre=? AND P.etatanalyse	=1";
+                                                        $stmt = mysqli_prepare($conn, $sql);
+                                                        mysqli_stmt_bind_param($stmt, "si", $date_jour, $id_centre);
+                                                        mysqli_stmt_execute($stmt);
+                                                        $result = mysqli_stmt_get_result($stmt);
+
                                                         if ($result) {
                                                             $K = 1;
                                                             while ($row = mysqli_fetch_assoc($result)) {
@@ -447,9 +443,7 @@ if (isset($_POST['recherche']) || isset($_GET['date'])) {
                                     <td>' . $nd . '</td>
                                     <td><div class="badge btn-inverse-success
                                     "><a href="../analyse/Analyse.php?id=' . $id . '&date='.$date_jour.'">Editer</a></div></td> 
-                           
-                                  
-                                  </tr>';
+                            </tr>';
 
                                                                 $K = $K + 1;
                                                             }
@@ -466,8 +460,11 @@ if (isset($_POST['recherche']) || isset($_GET['date'])) {
                                                         $sql = "SELECT p.id, d.nom, d.tel ,p.datep
                                                         FROM donneur d
                                                         INNER JOIN prelever p ON d.id = p.iddonneur
-                                                        WHERE p.etat = 3 AND p.datep = '$date_jour' and p.idcentre=$id_centre AND P.etatanalyse	=1 ";
-                                                        $result = mysqli_query($conn, $sql);
+                                                        WHERE p.etat = 3 AND p.datep = ? and p.idcentre=? AND P.etatanalyse	=1 ";
+                                                        $stmt = mysqli_prepare($conn, $sql);
+                                                        mysqli_stmt_bind_param($stmt, "si", $date_jour, $id_centre);
+                                                        mysqli_stmt_execute($stmt);
+                                                        $result = mysqli_stmt_get_result($stmt);
 
                                                         if ($result) {
                                                             $K = 1;

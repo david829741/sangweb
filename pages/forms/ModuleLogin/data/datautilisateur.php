@@ -5,36 +5,38 @@ include '../../../../connexion/connexion.php';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>SangPourTous</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="../../../../assets/vendors/mdi/css/materialdesignicons.min.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="../../../../assets/vendors/jvectormap/jquery-jvectormap.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.carousel.min.css">
-    <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.theme.default.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="../../../../assets/css/style.css">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="../../../../assets/images/favicon.png" />
-  </head>
-  <body>
-    <div class="container-scroller">
-      <!-- partial:partials/_sidebar.html -->
 
-      <!-- partial -->
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>SangPourTous</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../../../assets/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="../../../../assets/vendors/jvectormap/jquery-jvectormap.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/flag-icon-css/css/flag-icon.min.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.carousel.min.css">
+  <link rel="stylesheet" href="../../../../assets/vendors/owl-carousel-2/owl.theme.default.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <!-- endinject -->
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="../../../../assets/css/style.css">
+  <!-- End layout styles -->
+  <link rel="shortcut icon" href="../../../../assets/images/favicon.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_sidebar.html -->
+
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_navbar.html -->
       <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_navbar.html -->
-       <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
@@ -189,7 +191,7 @@ include '../../../../connexion/connexion.php';
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                   <div class="navbar-profile">
-                  <i class="mdi mdi-settings "></i>
+                    <i class="mdi mdi-settings "></i>
                     <p class="mb-0 d-none d-sm-block navbar-profile-name"></p>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
@@ -245,114 +247,120 @@ include '../../../../connexion/connexion.php';
                       </div>
                       <div class="col-3 col-sm-2 col-xl-2 pl-0 text-center">
                         <span>
-                        <?php
-                          echo'
+                          <?php
+                          echo '
                           <a href="../../index.php?jeton=" target="_blank" class="btn btn-outline-light btn-rounded get-started-btn">Voir </a>
                           ';
                           ?>
-                          </span>
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-           
-      
-            
-           
-           
+
+
+
+
+
             <div class="row ">
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
                     <h4 class="card-title">Order Status</h4>
                     <div class="table-responsive">
-                    <table class="table">
+                      <table class="table">
                         <thead>
                           <tr>
                             <th>
                               <div class="form-check form-check-muted m-0">
-                               
+
                               </div>
                             </th>
-                           
-                            
-                        
+
+
+
                             <th>Nom</th>
                             <th>Centre</th>
                             <th>Type</th>
-                         
-                           
 
-                          
+
+
+
                             <th> </th>
                             <th> </th>
-                       
+
                           </tr>
-                          </thead>
+                        </thead>
                         <tbody>
-                        
-                      
- 
+
+
+
                           <?php
-                        //  login	code	idcentre	id_type_utilisateur
+                              $sql = "SELECT id, login, idcentre, id_type_utilisateur FROM `utilisateur`";
+                              $stmt = mysqli_prepare($conn, $sql);
+                              mysqli_stmt_execute($stmt);
+                              $result = mysqli_stmt_get_result($stmt);
 
-                                        $sql = "SELECT * from `utilisateur`";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
+                              if ($result) {
+                                  while ($row = mysqli_fetch_assoc($result)) {
+                                      $id = $row['id'];
+                                      $login = $row['login'];
+                                      $idcentre = $row['idcentre'];
+                                      $id_type_utilisateur = $row['id_type_utilisateur'];
 
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['id'];
-                                                $login=$row['login'];
-                                                $idcentre=$row['idcentre'];
-                                               
-                                                $id_type_utilisateur=$row['id_type_utilisateur'];
-                                                $sql1 = "SELECT * from `type_utilisateur`where `id`=$id_type_utilisateur";
-                                                $result1 = mysqli_query($conn, $sql1);
-                                                $row1 = mysqli_fetch_assoc($result1);
-                                                $type=$row1['type'];
+                                      // Requête préparée pour récupérer le type d'utilisateur
+                                      $stmt1 = mysqli_prepare($conn, "SELECT type FROM `type_utilisateur` WHERE id = ?");
+                                      mysqli_stmt_bind_param($stmt1, "i", $id_type_utilisateur);
+                                      mysqli_stmt_execute($stmt1);
+                                      mysqli_stmt_bind_result($stmt1, $type);
+                                      mysqli_stmt_fetch($stmt1);
+                                      mysqli_stmt_close($stmt1);
 
-                                                $sql2 = "SELECT * from `centre`where `centre`=$idcentre";
-                                                $result2 = mysqli_query($conn, $sql2);
-                                                $row2 = mysqli_fetch_assoc($result2);
-                                                $denomination=$row2['denomination'];
-                                                $param1 ="modeuser.php" ;
-                                                $param ="suppuser.php" ;
-                                                $chemin="../../../../index.php";
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                  <div class="form-check form-check-muted m-0">
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>
-                                                  </div>
-                                                </td>
-                                                <td>' .$login.'</td>
-                                                <td>' .$denomination.'</td>
-                                                <td>' .$type.'</td>
-                                                <td>
-                                                  <div class="badge btn-inverse-success
-                         "><a href="'.$chemin.'?root='.$param1.'&mod='.$id.'">Editer<a></div>
-                                                </td>
-                                                <td>
-                                                  <div class="badge btn-inverse-success
-                         "><a href="'.$chemin.'?root='.$param.'&suppid='.$id.' ">Supprimer<a></div>
-                                                </td>
-                                                <td>
-                                                <button type="submit" name="submit" class="badge btn-inverse-success
-                         ">Reinitialiser</button>
-                                              </td>
-                                              </tr>';
-                                            }
-                                        }
-                                        ?>
+                                      // Requête préparée pour récupérer le nom du centre
+                                      $stmt2 = mysqli_prepare($conn, "SELECT denomination FROM `centre` WHERE centre = ?");
+                                      mysqli_stmt_bind_param($stmt2, "i", $idcentre);
+                                      mysqli_stmt_execute($stmt2);
+                                      mysqli_stmt_bind_result($stmt2, $denomination);
+                                      mysqli_stmt_fetch($stmt2);
+                                      mysqli_stmt_close($stmt2);
 
-                                        <!-- popup -->
-                                       <!-- popup -->
+                                      $param1 = "modeuser.php";
+                                      $param = "suppuser.php";
+                                      $chemin = "../../../../index.php";
+
+                                      echo '
+                                      <tr>
+                                          <td>
+                                              <div class="form-check form-check-muted m-0">
+                                                  <label class="form-check-label">' . $id . '</label>
+                                              </div>
+                                          </td>
+                                          <td>' . $login . '</td>
+                                          <td>' . $denomination . '</td>
+                                          <td>' . $type . '</td>
+                                          <td>
+                                              <div class="badge btn-inverse-success">
+                                                  <a href="' . $chemin . '?root=' . $param1 . '&mod=' . $id . '">Editer</a>
+                                              </div>
+                                          </td>
+                                          <td>
+                                              <div class="badge btn-inverse-success">
+                                                  <a href="' . $chemin . '?root=' . $param . '&suppid=' . $id . '">Supprimer</a>
+                                              </div>
+                                          </td>
+                                          <td>
+                                              <button type="submit" name="submit" class="badge btn-inverse-success">Reinitialiser</button>
+                                          </td>
+                                      </tr>';
+                                  }
+                              }
+                          ?>
+                          <!-- popup -->
+                          <!-- popup -->
                           <tr>
-                       
+
                         </tbody>
                       </table>
                     </div>
@@ -360,15 +368,15 @@ include '../../../../connexion/connexion.php';
                 </div>
               </div>
             </div>
-            
-            
+
+
           </div>
           <!-- content-wrapper ends -->
           <!-- partial:partials/_footer.html -->
           <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
               <span class="text-muted d-block text-center text-sm-left d-sm-inline-block"></span>
-               </div>
+            </div>
           </footer>
           <!-- partial -->
         </div>
@@ -397,5 +405,6 @@ include '../../../../connexion/connexion.php';
     <!-- Custom js for this page -->
     <script src="../../../../assets/js/dashboard.js"></script>
     <!-- End custom js for this page -->
-  </body>
+</body>
+
 </html>

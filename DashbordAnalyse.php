@@ -1,9 +1,7 @@
 <?PHP
 include 'connexion/connexion.php';
 session_start();
-
 // Récupérer les valeurs de session
-
 $id_centre = $_SESSION['idcentre'];
 ?>
 <!DOCTYPE html>
@@ -350,43 +348,65 @@ $id_centre = $_SESSION['idcentre'];
                           </tr>
                           </thead>
                         <tbody>
-                          <?php
-                          // Récupérer les valeurs de session
+                        <?php
+// Récupérer les valeurs de session
 $id_centre = $_SESSION['idcentre'];
 
 // Récupérer la date du jour
 $date_jour = date('Y-m-d');
-                        //   nom	region	tel
-                                        $sql = "SELECT d.id, d.nom, d.tel ,d.
-                                        FROM donneur d
-                                        INNER JOIN prelever p ON d.id = p.iddonneur
-                                        WHERE p.etat = 1 AND p.datep = '$date_jour' and p.idcentre=$id_centre ";
-                                        $result = mysqli_query($conn, $sql);
-                                        if ($result) {
-                                            while($row = mysqli_fetch_assoc($result)){
-                                                $id=$row['id'];
-                                                $nom=$row['nom'];
-                                             //   $region=$row['region'];                                               
-                                                $tel=$row['tel'];
-                                                echo'
-                                                <tr>
-                                                <td>
-                                                  <div class="form-check form-check-muted m-0">
-                                                    <label class="form-check-label">
-                                                    '.$id.'
-                                                    </label>
-                                                  </div>
-                                                </td>
-                                                <td>' .$nom.'</td>
-                                                <td>' .$tel.'</td>
-                                                <td><div class="badge btn-inverse-success
-                         "><a href="pages/forms/">Valider</a></div></td>
-                                              <td><div class="badge btn-inverse-success
-                         "><a href="">Invalider</a></div></td>  
-                                              </tr>';    
-                                            }
-                                        }
-                                        ?>
+
+// Préparer la requête avec une requête préparée
+$sql = "SELECT id, nom, tel
+        FROM donneur
+        WHERE id IN (
+            SELECT d.id
+            FROM donneur d
+            INNER JOIN prelever p ON d.id = p.iddonneur
+            WHERE p.etat = 1 AND p.datep = ? AND p.idcentre = ?
+        )";
+
+$stmt = mysqli_prepare($conn, $sql);
+if ($stmt) {
+    // Liage des paramètres
+    mysqli_stmt_bind_param($stmt, "si", $date_jour, $id_centre);
+
+    // Exécution de la requête préparée
+    mysqli_stmt_execute($stmt);
+
+    // Liage des résultats
+    mysqli_stmt_bind_result($stmt, $id, $nom, $tel);
+
+    // Boucle sur les résultats
+    while (mysqli_stmt_fetch($stmt)) {
+        echo '
+        <tr>
+            <td>
+                <div class="form-check form-check-muted m-0">
+                    <label class="form-check-label">
+                        ' . $id . '
+                    </label>
+                </div>
+            </td>
+            <td>' . $nom . '</td>
+            <td>' . $tel . '</td>
+            <td>
+                <div class="badge btn-inverse-success">
+                    <a href="pages/forms/">Valider</a>
+                </div>
+            </td>
+            <td>
+                <div class="badge btn-inverse-success">
+                    <a href="">Invalider</a>
+                </div>
+            </td>
+        </tr>';
+    }
+
+    // Fermeture du statement
+    mysqli_stmt_close($stmt);
+}
+
+?>
                                         <!-- popup -->
                                         <!-- popup -->
                           <tr>

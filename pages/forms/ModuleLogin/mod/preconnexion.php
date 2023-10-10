@@ -2,29 +2,28 @@
 <?php
 include '../../../../connexion/connexion.php';
 
-
 if (isset($_POST['submit'])) {
     $code = $_POST['code'];
     $id = $_GET['mod'];
-//    $code = password_hash($_POST['code'], PASSWORD_DEFAULT); // Crypter le mot de passe
     $confcode = $_POST['confcode'];
-if ($code==$confcode)
-{
-    $code = md5($code);
-        // Requête de mise à jour
-$sql = "UPDATE `utilisateur` SET code = '$code',preconnexion=1 WHERE id =$id";
-$result = mysqli_query($conn, $sql);
 
+    if ($code == $confcode) {
+        $code = md5($code);
 
+        // Requête de mise à jour avec requête préparée
+        $sql = "UPDATE `utilisateur` SET code = ?, preconnexion = 1 WHERE id = ?";
+        $stmt = $conn->prepare($sql);
 
-    if (!$result) {
-        die("Could not connect to database because:" . mysqli_error($conn));
+        if ($stmt) {
+            $stmt->bind_param("si", $code, $id);
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            die("Could not connect to database because:" . mysqli_error($conn));
+        }
     }
 }
-
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 

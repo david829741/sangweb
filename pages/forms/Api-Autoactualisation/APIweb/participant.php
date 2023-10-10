@@ -8,34 +8,23 @@ include '../../../../connexion/connexion.php';
 session_start();
 
 // Récupérer les valeurs de session
+
 $id_centre = $_SESSION['id_centre'];
-
-$sql = "SELECT * FROM `prelever` WHERE idcentre = ?";
+$sql = "SELECT COUNT(*) as total from `prelever` where idcentre=?";
 $stmt = $conn->prepare($sql);
-
-// Liaison des paramètres
 $stmt->bind_param("i", $id_centre);
-
-// Exécution de la requête
 $stmt->execute();
+$result = $stmt->get_result();
 
-// Liaison des résultats
-$stmt->bind_result($id, $autre_colonne); // Ajoute les colonnes nécessaires ici
-
-// Initialisation du total
-$total = 0;
-
-// Parcours des résultats
-while ($stmt->fetch()) {
-    $total++;
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total = $row['total'];
+    echo $total;
+} else {
+    echo "0"; // Si aucun centre n'est trouvé
 }
 
-// Fermeture du statement
 $stmt->close();
-
-// Affichage du total
-echo $total;
-
-// Fermeture de la connexion
 $conn->close();
 ?>
+

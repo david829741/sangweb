@@ -8,13 +8,17 @@ session_start();
 // Récupérer l'ID du centre depuis la session
 $id_centre = $_SESSION['idcentre'];
 
-// Effectuer la requête pour obtenir le nombre d'enregistrements avec état égal à 2 et ID de centre spécifique
-$sql = "SELECT COUNT(*) as total FROM prelever WHERE etat = 2 AND idcentre = $id_centre";
-$result = mysqli_query($conn, $sql);
+// Effectuer la requête préparée pour obtenir le nombre d'enregistrements avec état égal à 2 et ID de centre spécifique
+$sql = "SELECT COUNT(*) as total FROM prelever WHERE etat = ? AND idcentre = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $etat, $id_centre);
+$etat = 2;
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result) {
     // Récupérer le total directement
-    $row = mysqli_fetch_assoc($result);
+    $row = $result->fetch_assoc();
     $total = $row['total'];
 
     echo $total;

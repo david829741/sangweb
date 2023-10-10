@@ -2,59 +2,66 @@
 <?php
 include '../../../../connexion/connexion.php';
 session_start();
+$ajout=0;
 
-   // Récupérer les valeurs de session
-   $id_centre = $_SESSION['idcentre'];
+// Récupérer les valeurs de session
+$id_centre = $_SESSION['idcentre'];
+
 if (isset($_POST['submit'])) {
     
-   // denomination	nbr_max	localisation	
-   
-   function generateUniqueCode() {
-    return md5(uniqid(rand(), true) . microtime(true));
-}
-$uniqueCode = generateUniqueCode();
-// Récupérer les valeurs soumises du formulaire
-$nom = $_POST["nom"];
-$email = $_POST["email"];
-$tel = $_POST["tel"];
+    // Récupérer les valeurs soumises du formulaire
+    $nom = mysqli_real_escape_string($conn, $_POST["nom"]);
+    $email = mysqli_real_escape_string($conn, $_POST["email"]);
+    $tel = mysqli_real_escape_string($conn, $_POST["tel"]);
 
-$groupesang ='';
-// Obtenez la date actuelle
-$currentDate = date('Y-m-d');
+    function generateUniqueCode() {
+        return md5(uniqid(rand(), true) . microtime(true));
+    }
 
+    $uniqueCode = generateUniqueCode();
 
-// Préparer la requête d'insertion
-$sql = "INSERT INTO donneur (nom, email, tel,uniquekkey,groupe)
-        VALUES ('$nom', '$region', '$tel','$uniqueCode','$groupesang')";
+    $currentDate = date('Y-m-d');
+ 
+    // Utiliser des requêtes préparées pour renforcer la sécurité
+    $sqlDonneur = "INSERT INTO donneur (nom, email, tel, uniquekkey, groupe) VALUES (?, ?, ?, ?, ?)";
+    $stmtDonneur = $conn->prepare($sqlDonneur);
+    $stmtDonneur->bind_param("sssss", $nom, $email, $tel, $uniqueCode, $groupesang);
 
-// Exécuter la requête d'insertion
-$result = mysqli_query($conn, $sql);
+    // Exécuter la requête pour `donneur`
+    $donneurInsertResult = $stmtDonneur->execute();
 
-// Vérifier si l'insertion a réussi
-if ($result) {
-    echo "Insertion réussie.";
-      // Récupérer le dernier identifiant inséré
-      // Récupérer le dernier identifiant inséré
-      $sql = "SELECT id FROM `donneur` WHERE `uniquekkey`='$uniqueCode'";
-      $result = mysqli_query($conn, $sql);
-      $row = mysqli_fetch_assoc($result);
-      $last_id = $row['id'];
-   
-    // Préparer la requête d'insertion
-$sql = "INSERT INTO prelever (idcentre, iddonneur,etat,datep)
-VALUES ('$id_centre', '$last_id',3, '$currentDate')";
+    // Vérifier si l'insertion dans `donneur` a réussi
+    if ($donneurInsertResult) {
+        // Récupérer le dernier identifiant inséré dans `donneur`
+        $lastDonneurId = $stmtDonneur->insert_id;
 
-// Exécuter la requête d'insertion
-$result = mysqli_query($conn, $sql);
-// Vérifier si l'insertion a réussi
+        // Utiliser une requête préparée pour `prelever`
+        $sqlPrelever = "INSERT INTO prelever (idcentre, iddonneur, etat, datep) VALUES (?, ?, ?, ?)";
+        $stmtPrelever = $conn->prepare($sqlPrelever);
+        $stmtPrelever->bind_param("iiis", $id_centre, $lastDonneurId, 3,$currentDate);
+        // Exécuter la requête pour `prelever`
+        $preleverInsertResult = $stmtPrelever->execute();
+        // Vérifier si l'insertion dans `prelever` a réussi
+        if ($preleverInsertResult) {
+            echo "Insertion réussie.";
+            $ajout=1;
+        } else {
+            echo "Erreur lors de l'insertion dans prelever : " . $stmtPrelever->error;
+            $ajout=2;
 
-} else {
-    echo "Erreur lors de l'insertion : " . $conn->error;
-    
-}
+        }
 
-// Fermer la connexion
-$conn->close();
+        // Fermer la déclaration préparée pour `prelever`
+        $stmtPrelever->close();
+    } else {
+        echo "Erreur lors de l'insertion dans donneur : " . $stmtDonneur->error;
+    }
+
+    // Fermer la déclaration préparée pour `donneur`
+    $stmtDonneur->close();
+
+    // Fermer la connexion
+    $conn->close();
 }
 ?>
 <!DOCTYPE html>
@@ -204,7 +211,20 @@ $conn->close();
                       </div>
                       <div class="col-5 col-sm-7 col-xl-8 p-0">
                         <h4 class="mb-1 mb-sm-0"></h4>
-                        <p class="mb-0 font-weight-normal d-none d-sm-block">Donneur Ajout</p>
+
+                        
+                        <?php
+              
+              if ($ajout == 1) {
+                echo '  <p class="mb-0 font-weight-normal d-none d-sm-block">Ajout éffectué</p>
+<img src="RECHERCHE/approuve.png" alt=""  width="50"> ';
+              } else if ($ajout == 2) {
+                echo '  <p class="mb-0 font-weight-normal d-none d-sm-block">erreur lors de l"ajout</p>
+  <img src="RECHERCHE/close.png" alt=""  width="50">';
+              } else {
+              echo'  <p class="mb-0 font-weight-normal d-none d-sm-block">Donneur Ajout</p>';
+              }
+              ?>
                       </div>
                       <div class="col-3 col-sm-2 col-xl-2 pl-0 text-center">
                         <span>
